@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.ServiceScoreMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.ServiceScore">
+        <id column="faciid" property="faciid" />
+        <result column="totalscore" property="totalscore" />
+    </resultMap>
+    <select id="selectPageScoreRank" resultType="com.trw.vo.ScoreRank">
+        SELECT
+        a.faciid,
+        a.totalscore,
+        b.faciname
+        FROM trw_t_service_score a
+        INNER JOIN trw_t_faci b ON a.faciid=b.faciid
+        order by a.totalscore DESC limit 10
+    </select>
+
+
+</mapper>

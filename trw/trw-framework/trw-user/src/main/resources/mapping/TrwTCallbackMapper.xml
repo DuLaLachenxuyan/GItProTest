@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.TrwTCallbackMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.trw.model.TrwTCallback">
+		<id column="callid" property="callid" />
+		<result column="applytime" property="applytime" />
+		<result column="callname" property="callname" />
+		<result column="productid" property="productid" />
+		<result column="callstat" property="callstat" />
+		<result column="faciid" property="faciid" />
+		<result column="agentid" property="agentid" />
+		<result column="note" property="note" />
+		<result column="callbacktel" property="callbacktel" />
+	</resultMap>
+
+	<select id="findCallback" resultType="java.util.Map"
+		parameterType="java.util.Map">
+		SELECT
+		c.callid,
+		c.applytime,
+		c.callstat,
+		c.callname,
+		c.callbacktel,
+		c.note,
+		l.productid,
+		l.productname
+		FROM
+		trw_t_callback c
+		INNER
+		JOIN trw_t_land l ON
+		c.productid= l.productid
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			<if test="faciid != null and faciid != '' ">
+				AND c.faciid =#{faciid}
+			</if>
+			<if test="agentid != null and agentid != '' ">
+				AND c.agentid =#{agentid}
+			</if>
+			<if test="callstat != null and callstat != '' ">
+				AND c.callstat =#{callstat}
+			</if>
+			<if test="starttime != null and starttime != '' ">
+				AND DATE_FORMAT(c.applytime,'%Y-%m-%d') <![CDATA[>=]]>
+				DATE_FORMAT(#{starttime},'%Y-%m-%d')
+			</if>
+			<if test="endtime != null and endtime != '' ">
+				AND DATE_FORMAT(c.applytime,'%Y-%m-%d') <![CDATA[<=]]>
+				DATE_FORMAT(#{endtime}, '%Y-%m-%d')
+			</if>
+			<if test="callbacktel != null and callbacktel != '' ">
+				AND c.callbacktel like concat(#{callbacktel},'%')
+			</if>
+		</trim>
+	</select>
+
+	<update id="updateCallback" parameterType="java.util.Map">
+		UPDATE trw_t_callback
+		<trim prefix="set" suffixOverrides=",">
+			<if test="note != null and note != ''">note=#{note},</if>
+			<if test="callstat != null and callstat != ''">callstat=#{callstat},</if>
+		</trim>
+		WHERE callid=#{callid}
+	</update>
+
+	<select id="findUserCall" parameterType="java.util.Map"
+		resultType="com.trw.model.TrwTCallback">
+		select callid from trw_t_callback where
+		callbacktel=#{callbacktel} and productid=#{productid}
+	</select>
+</mapper>

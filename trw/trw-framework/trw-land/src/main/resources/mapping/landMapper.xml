@@ -1,0 +1,678 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.LandMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.trw.model.TrwTLand">
+		<id column="productid" property="productid" />
+		<result column="productname" property="productname" />
+		<result column="transMode" property="transMode" />
+		<result column="location" property="location" />
+		<result column="address" property="address" />
+		<result column="productDesc" property="productDesc" />
+		<result column="landContact" property="landContact" />
+		<result column="phone" property="phone" />
+		<result column="reporter" property="reporter" />
+		<result column="reporttime" property="reporttime" />
+		<result column="acreage" property="acreage" />
+		<result column="purpose" property="purpose" />
+		<result column="rentyear" property="rentyear" />
+		<result column="price" property="price" />
+		<result column="updatetime" property="updatetime" />
+		<result column="landType" property="landType" />
+		<result column="righttype" property="righttype" />
+		<result column="rightexpirdate" property="rightexpirdate" />
+		<result column="ownership" property="ownership" />
+		<result column="watersupply" property="watersupply" />
+		<result column="powersupply" property="powersupply" />
+		<result column="netsupply" property="netsupply" />
+		<result column="mechanization" property="mechanization" />
+		<result column="soil" property="soil" />
+		<result column="irrigation" property="irrigation" />
+		<result column="drainage" property="drainage" />
+		<result column="phsoil" property="phsoil" />
+		<result column="flatness" property="flatness" />
+		<result column="aum" property="aum" />
+		<result column="cityrate" property="cityrate" />
+		<result column="residentpop" property="residentpop" />
+		<result column="neargroup" property="neargroup" />
+		<result column="highway" property="highway" />
+		<result column="imgs" property="imgs" />
+		<result column="landNote" property="landNote" />
+		<result column="lookmodel" property="lookmodel" />
+		<result column="rightscope" property="rightscope" />
+		<result column="approvalStat" property="approvalStat" />
+		<result column="reviewer" property="reviewer" />
+		<result column="reviewtime" property="reviewtime" />
+		<result column="faciid" property="faciid" />
+		<result column="earthSourceNote" property="earthSourceNote" />
+		<result column="landSource" property="landSource" />
+		<result column="agentId" property="agentId" />
+		<result column="landState" property="landState" />
+		<result column="landFacilities" property="landFacilities" />
+		<result column="siteProperties" property="siteProperties" />
+		<result column="awayAirport" property="awayAirport" />
+		<result column="awayExpressway" property="awayExpressway" />
+		<result column="nationalHighway" property="nationalHighway" />
+		<result column="speedRailway" property="speedRailway" />
+		<result column="awayPort" property="awayPort" />
+		<result column="awayCity" property="awayCity" />
+		<result column="proxy" property="proxy" />
+		<result column="coverimg" property="coverimg" />
+		<result column="phoneCheck" property="phoneCheck" />
+		<result column="fieldCheck" property="fieldCheck" />
+	</resultMap>
+
+	<resultMap type="com.trw.vo.SoilSource" id="SoilSourceMap"
+		extends="BaseResultMap">
+		<result column="aname" property="aname" />
+		<collection property="looks" javaType="java.util.ArrayList"
+			ofType="com.trw.model.TrwTLookinfo">
+			<result column="num" property="num" />
+			<result column="lookfee" property="lookfee" />
+		</collection>
+	</resultMap>
+	<select id="selectIndexLand" resultType="com.trw.model.TrwTLand"
+		parameterType="java.util.Map">
+		select
+		a.productid,
+		a.productname,
+		a.transMode,
+		a.location,
+		a.address,
+		a.acreage,
+		a.purpose,
+		a.price,
+		a.rentyear,
+		a.landNote,
+		a.landType,
+		a.rightscope,
+		a.coverimg
+		from TRW_T_LAND a
+		INNER JOIN
+		trw_t_recommend b ON a.productid=b.productid
+		where a.earthSourceNote
+		='01'
+		AND b.state='01'
+	    AND a.landState='02'
+		<if test="recommendAreas != null and recommendAreas != '' ">
+			and b.recommendArea =#{recommendAreas}
+		</if>
+		<if test="recommendPosition != null and recommendPosition != '' ">
+			and b.position =#{recommendPosition}
+		</if>
+		<if test="currentTime != null">
+			and b.recommendTime &lt;= #{currentTime}
+			and b.expirationTime &gt;= #{currentTime}
+		</if>
+		 
+		<if test="landType != null and landType != '' ">
+			AND a.landtype =#{landType}
+		</if>
+		<if test="areaid !=null and areaid !=null">
+			And a.location like CONCAT(#{areaid},'%')
+		</if>
+		<if test="faciid!=null and faciid!=''">
+			And a.faciid=#{faciid}
+		</if>
+		order by updatetime ${order}
+	</select>
+	<select id="selectMainLand" resultType="com.trw.model.TrwTLand"
+		parameterType="java.util.Map">
+		select
+		a.productid,
+		a.productname,
+		a.transMode,
+		a.location,
+		a.address,
+		a.acreage,
+		a.purpose,
+		a.rentyear,
+		a.landNote,
+		a.rightscope,
+		a.price,
+		a.coverimg
+		from TRW_T_LAND a
+		where a.earthSourceNote ='01'
+		AND a.landState='02'
+		<if test="landType != null and landType != '' ">
+			AND a.landtype =#{landType}
+		</if>
+		<if test="transMode != null and transMode != '' ">
+			AND a.transMode =#{transMode}
+		</if>
+		<if test="landLabel != null and landLabel != '' ">
+			AND a.landNote =#{landLabel}
+		</if>
+		<if test="landPlaceMax != null and landPlaceMax != '' ">
+			and a.acreage &lt; ${landPlaceMax}
+		</if>
+		<if test="landPlaceMin != null and landPlaceMin != '' ">
+			and a.acreage &gt;= ${landPlaceMin}
+		</if>
+		<if test="rentYearMax != null and rentYearMax != '' ">
+			and a.rentyear &lt; ${rentYearMax}
+		</if>
+		<if test="rentYearMin != null and rentYearMin != '' ">
+			and a.rentyear &gt;= ${rentYearMin}
+		</if>
+		<if test="approvalStat != null and approvalStat != '' ">
+			AND a.approvalStat =#{approvalStat}
+		</if>
+		<if test="areaid != null and areaid != '' ">
+			AND a.location like CONCAT(#{areaid},'%')
+		</if>
+		<if test="priceMax != null and priceMax != '' ">
+			AND a.price &lt; #{priceMax}
+		</if>
+		<if test="priceMin != null and priceMin != '' ">
+			AND a.price &gt;= #{priceMin}
+		</if>
+		<if test="purpose != null and purpose != '' ">
+			AND a.purpose like CONCAT('%',#{purpose},'%')
+		</if>
+		<if test="text != null and text != ''">
+			AND (
+			a.productname like CONCAT('%',#{text},'%')
+			or
+			a.address like CONCAT('%',#{text},'%')
+			)
+		</if>
+		<if test="price !=null and price !=null">
+			And a.price=#{price}
+		</if>
+		<if test="acreage !=null and acreage !=null">
+			And a.acreage=#{acreage}
+		</if>
+		order by reporttime ${order}
+	</select>
+	<select id="selectFaciLand" resultType="com.trw.model.TrwTLand">
+		select
+		a.productid,
+		a.productname,
+		a.transMode,
+		a.location,
+		a.address,
+		a.acreage,
+		a.updatetime,
+		a.landContact,
+		a.phone,
+		a.purpose,
+		a.rentyear,
+		a.price,
+		a.landNote,
+		a.rightscope,
+		a.agentId,
+		a.coverimg
+		from TRW_T_LAND a
+		WHERE
+		a.faciid = #{faciid}
+	</select>
+	<select id="selectLandNote" resultType="com.trw.model.TrwTLand"
+		parameterType="java.lang.String">
+		select
+		a.productid,
+		a.productname,
+		a.transMode,
+		a.location,
+		a.address,
+		a.acreage,
+		a.updatetime,
+		a.purpose,
+		a.rentyear,
+		a.price,
+		a.landNote,
+		a.rightscope,
+		a.faciid
+		from TRW_T_LAND a INNER JOIN TRW_T_FACI b
+		ON
+		a.faciid = b.faciid
+		WHERE  a.earthSourceNote='01'
+		<if test="_parameter != null and _parameter != '' ">
+			AND a.landNote = ${_parameter}
+		</if>
+	</select>
+	<select id="selectLandFaci" resultType="com.trw.model.TrwTLand"
+		parameterType="java.util.Map">
+		select
+		a.productid,
+		a.productname,
+		a.transMode,
+		a.location,
+		a.address,
+		a.acreage,
+		a.updatetime,
+		a.purpose,
+		a.rentyear,
+		a.price,
+		a.landNote,
+		a.rightscope,
+		a.faciid
+		from TRW_T_LAND a
+		WHERE a.faciid=#{faciid}
+		<if test="phone != null and phone != '' ">
+			AND a.phone =#{phone}
+		</if>
+		<if test="transMode != null and transMode != '' ">
+			AND a.transMode =#{transMode}
+		</if>
+		<if test="location != null and location != '' ">
+			AND a.location =#{location}
+		</if>
+		<if test="landType != null and landType != '' ">
+			AND a.landType =#{landType}
+		</if>
+		<if test="rentyear != null and rentyear != '' ">
+			AND a.rentyear =#{rentyear}
+		</if>
+		<if test="acreageMax != null and acreageMax != '' ">
+			and a.acreage &lt;= ${acreageMax}
+		</if>
+		<if test="acreageMin != null and acreageMin != '' ">
+			and a.acreage &gt;= ${acreageMin}
+		</if>
+	</select>
+	<select id="selectLookModel"
+		resultType="com.trw.model.TrwTLookinfo"
+		parameterType="java.lang.String">
+		SELECT
+		a.lookfee,
+		a.num
+		FROM
+		trw_t_lookinfo a
+		where
+		a.productid=#{_parameter}
+		order by a.num
+	</select>
+	<select id="selectMyLandsManage"
+		resultType="com.trw.model.TrwTLand" parameterType="java.util.Map">
+		select
+		a.productid,
+		a.landState,
+		a.updatetime,
+		a.reporttime,
+		a.productname,
+		a.price,
+		a.address,
+		a.location,
+		a.landType,
+		a.transMode,
+		a.coverimg,
+		a.earthSourceNote
+		from TRW_T_LAND a
+		WHERE
+		reporter=#{reporter}
+		<if test="landState != null and landState != '' ">
+			AND a.landState =#{landState}
+		</if>
+		<if test="earthSourceNote != null and earthSourceNote != '' ">
+			AND a.earthSourceNote =#{earthSourceNote}
+		</if>
+		<if test="landType != null and landType != '' ">
+			AND a.landType =#{landType}
+		</if>
+		<if test="transMode != null and transMode != '' ">
+			AND a.transMode =#{transMode}
+		</if>
+		<if test="landPlaceMax != null and landPlaceMax != '' ">
+			and a.acreage &lt;= ${landPlaceMax}
+		</if>
+		<if test="landPlaceMin != null and landPlaceMin != '' ">
+			and a.acreage &gt;= ${landPlaceMin}
+		</if>
+		<if test="timeTwo != null and timeTwo != '' ">
+			and a.reporttime &lt; DATE_FORMAT(#{timeTwo},'%Y-%m-%d')
+		</if>
+		<if test="timeOne != null and timeOne != '' ">
+			and a.reporttime &gt; DATE_FORMAT(#{timeOne},'%Y-%m-%d')
+		</if>
+		order by a.reporttime desc
+	</select>
+	<select id="selectLandMarket"
+		resultType="com.trw.model.TrwTLand" parameterType="java.util.Map">
+		SELECT
+		c.coverimg,
+		c.productname,
+		c.acreage,
+		c.purpose,
+		c.rentyear,
+		c.location,
+		c.productid,
+		c.address,
+		c.reporttime,
+		c.price
+		FROM trw_t_land c
+		WHERE
+		c.location LIKE concat(#{faciLocation},'%')
+		AND c.faciid IS NULL
+		And c.proxy = '01'
+		<if test="landType != null and landType != '' ">
+			AND c.landType =#{landType}
+		</if>
+		<if test="location != null and location != '' ">
+			AND c.location like concat(#{location},'%')
+		</if>
+		<if test="phone != null and phone != '' ">
+			AND c.phone =#{phone}
+		</if>
+		<if test="account != null and account != '' ">
+			AND c.account =#{account}
+		</if>
+		<if test="purpose != null and purpose != '' ">
+			AND c.purpose =#{purpose}
+		</if>
+		<if test="search != null and search != '' ">
+			AND (c.productname like CONCAT('%',#{search},'%')
+			OR
+			c.purpose like CONCAT('%',#{search},'%'))
+		</if>
+		<if test="reporttimeone != null and reporttimeone != '' ">
+			AND c.reporttime &gt;
+			DATE_FORMAT(#{reporttimeone},'%Y-%m-%d')
+		</if>
+		<if test="reporttimetwo != null and reporttimetwo != '' ">
+			AND c.reporttime &lt;
+			DATE_FORMAT(#{reporttimetwo},'%Y-%m-%d')
+		</if>
+		<if test="acreageMax != null and acreageMax != '' ">
+			and c.acreage &lt; ${acreageMax}
+		</if>
+		<if test="acreageMin != null and acreageMin != '' ">
+			and c.acreage &gt;= ${acreageMin}
+		</if>
+		<if test="landState != null and landState != '' ">
+			and c.landState =#{landState}
+		</if>
+		order by c.updatetime desc
+
+	</select>
+	<select id="selectMarket" resultType="com.trw.model.TrwTLand"
+		parameterType="java.util.Map">
+		SELECT
+		c.coverimg,
+		c.productname,
+		c.acreage,
+		c.purpose,
+		c.rentyear,
+		c.location,
+		c.productid,
+		c.address,
+		c.reporttime,
+		c.price
+		FROM trw_t_land c
+		WHERE
+		c.faciid=#{faciid} And c.agentId IS Null
+		<if test="landType != null and landType != '' ">
+			AND c.landType =#{landType}
+		</if>
+		<if test="location != null and location != '' ">
+			AND c.location like concat(#{location},'%')
+		</if>
+		<if test="phone != null and phone != '' ">
+			AND c.phone =#{phone}
+		</if>
+		<if test="account != null and account != '' ">
+			AND c.account =#{account}
+		</if>
+		<if test="purpose != null and purpose != '' ">
+			AND c.purpose =#{purpose}
+		</if>
+		<if test="search != null and search != '' ">
+			AND (c.productname like CONCAT('%',#{search},'%')
+			OR
+			c.purpose like CONCAT('%',#{search},'%'))
+		</if>
+		<if test="reporttimeone != null and reporttimeone != '' ">
+			AND c.reporttime &gt;
+			DATE_FORMAT(#{reporttimeone},'%Y-%m-%d')
+		</if>
+		<if test="reporttimetwo != null and reporttimetwo != '' ">
+			AND c.reporttime &lt;=
+			DATE_FORMAT(#{reporttimetwo},'%Y-%m-%d')
+		</if>
+		<if test="acreageMax != null and acreageMax != '' ">
+			and c.acreage &lt; ${acreageMax}
+		</if>
+		<if test="acreageMin != null and acreageMin != '' ">
+			and c.acreage &gt;= ${acreageMin}
+		</if>
+		order by c.updatetime desc
+	</select>
+	<select id="selectSourceDetails" resultMap="SoilSourceMap"
+		parameterType="java.util.Map">
+		SELECT
+		a.price,
+		a.coverimg,
+		a.productname,
+		a.earthSourceNote,
+		a.acreage,
+		a.purpose,
+		a.rentyear,
+		a.productid,
+		a.phoneCheck,
+		a.fieldCheck,
+		a.address,
+		a.landState,
+		a.transMode,
+		a.imgs,
+		IFNULL(a.updatetime,a.reporttime) as updatetime,
+		a.reporttime,
+		d.id,
+		d.aname,
+		c.lookfee,
+		c.num
+		FROM
+		trw_t_land a
+		LEFT JOIN
+		trw_t_agent d ON a.agentId = d.id
+		LEFT JOIN trw_t_lookinfo c ON
+		a.productid = c.productid
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			<if test="landState != null and landState != '' ">
+				AND a.landState =#{landState}
+			</if>
+			<if test="faciid != null and faciid != '' ">
+				AND a.faciid =#{faciid}
+			</if>
+			<if test="productid != null and productid != '' ">
+				AND a.productid like CONCAT('%',#{productid},'%')
+			</if>
+			<if test="agentId != null and agentId != '' ">
+				AND a.agentId =#{agentId}
+			</if>
+			 
+			<if test="transMode != null and transMode != '' ">
+				AND a.transMode =#{transMode}
+			</if>
+			<if test="landType != null and landType != '' ">
+				AND a.landType =#{landType}
+			</if>
+			<if test="location != null and location != '' ">
+				AND a.location =#{location}
+			</if>
+			<if test="phone != null and phone != '' ">
+				AND a.phone =#{phone}
+			</if>
+			<if test="account != null and account != '' ">
+				AND a.account =#{account}
+			</if>
+			<if test="reporttimeone != null and reporttimeone != '' ">
+				AND a.reporttime &gt;
+				DATE_FORMAT(#{reporttimeone},'%Y-%m-%d')
+			</if>
+			<if test="reporttimetwo != null and reporttimetwo != '' ">
+				AND a.reporttime &lt;=
+				DATE_FORMAT(#{reporttimetwo},'%Y-%m-%d')
+			</if>
+			<if test="updatetimeone != null and updatetimeone != '' ">
+				AND a.updatetime &gt;
+				DATE_FORMAT(#{updatetimeone},'%Y-%m-%d')
+			</if>
+			<if test="updatetimetwo != null and updatetimetwo != '' ">
+				AND a.updatetime &lt;=
+				DATE_FORMAT(#{updatetimetwo},'%Y-%m-%d')
+			</if>
+			<if test="acreageMax != null and acreageMax != '' ">
+				and a.acreage &lt; ${acreageMax}
+			</if>
+			<if test="acreageMin != null and acreageMin != '' ">
+				and a.acreage &gt;= ${acreageMin}
+			</if>
+			<if test="phoneCheck != null and phoneCheck != '' ">
+				and a.phoneCheck =#{phoneCheck}
+			</if>
+			<if test="fieldCheck != null and fieldCheck != '' ">
+				and a.fieldCheck =#{fieldCheck}
+			</if>
+			<if test="withoutCheck != null and withoutCheck != '' ">
+				and (a.phoneCheck =#{withoutCheck} or a.fieldCheck
+				=#{withoutCheck})
+			</if>
+			<if test="text !=null and text !=''">
+				and (a.productname like CONCAT('%',#{text},'%') or
+				a.location like
+				CONCAT('%',#{text},'%'))
+			</if>
+		</trim>
+		order by updatetime desc
+	</select>
+	<update id="allcalLand" parameterType="java.util.Map">
+		update trw_t_land set
+		agentId=#{stat},agencySituation='02' where productId=#{productid}
+	</update>
+
+	<update id="updateLookModel" parameterType="java.util.Map">
+		UPDATE trw_t_land SET
+		lookmodel=#{lookmodel} where faciid=#{faciid}
+	</update>
+
+	<update id="updateMyland" parameterType="java.util.Map">
+		UPDATE trw_t_land
+		<trim prefix="set" suffixOverrides=",">
+			<if test="location != null and location != ''">location=#{location},</if>
+			<if test="address != null and address != ''">address=#{address},</if>
+			<if test="productname != null and productname != ''">productname=#{productname},</if>
+			<if test="landType != null and landType != ''">landType=#{landType},</if>
+			<if test="acreage != null and acreage != ''">acreage=#{acreage},</if>
+			<if test="rentyear != null and rentyear != ''">rentyear=#{rentyear},</if>
+			<if test="transMode != null and transMode != ''">transMode=#{transMode},</if>
+			<if test="price != null and price != ''">price=#{price},</if>
+			<if test="imgs != null and imgs != ''">imgs=#{imgs},</if>
+			<if test="coverimg != null and coverimg != ''">coverimg=#{coverimg},</if>
+			<if test="productDesc != null and productDesc != ''">productDesc=#{productDesc},</if>
+			<if test="landContact != null and landContact != ''">landContact=#{landContact},</if>
+			<if test="phone != null and phone != ''">phone=#{phone},</if>
+			<if test="ownership != null and ownership != ''">ownership=#{ownership},</if>
+			<if test="landFacilities != null and landFacilities != ''">landFacilities=#{landFacilities},</if>
+			<if test="siteProperties != null and siteProperties != ''">siteProperties=#{siteProperties},</if>
+			<if test="awayAirport != null and awayAirport != ''">awayAirport=#{awayAirport},</if>
+			<if test="awayExpressway != null and awayExpressway != ''">awayExpressway=#{awayExpressway},</if>
+			<if test="nationalHighway != null and nationalHighway != ''">nationalHighway=#{nationalHighway},</if>
+			<if test="speedRailway != null and speedRailway != ''">speedRailway=#{speedRailway},</if>
+			<if test="awayPort != null and awayPort != ''">awayPort=#{awayPort},</if>
+			<if test="awayCity != null and awayCity != ''">awayCity=#{awayCity},</if>
+			<if test="righttype != null and righttype != ''">righttype=#{righttype}</if>
+			<if test="rightexpirdate != null and rightexpirdate != ''">rightexpirdate=#{rightexpirdate},</if>
+			<if test="watersupply != null and watersupply != ''">watersupply=#{watersupply},</if>
+			<if test="powersupply != null and powersupply != ''">powersupply=#{powersupply},</if>
+			<if test="netsupply != null and netsupply != ''">netsupply=#{netsupply},</if>
+			<if test="mechanization != null and mechanization != ''">mechanization=#{mechanization},</if>
+			<if test="soil != null and soil != ''">soil=#{soil},</if>
+			<if test="irrigation != null and irrigation != ''">irrigation=#{irrigation},</if>
+			<if test="drainage != null and drainage != ''">drainage=#{drainage},</if>
+			<if test="phsoil != null and phsoil != ''">phsoil=#{phsoil},</if>
+			<if test="flatness != null and flatness != ''">flatness=#{flatness},</if>
+			<if test="aum != null and aum != ''">aum=#{aum},</if>
+			<if test="cityrate != null and cityrate != ''">cityrate=#{cityrate},</if>
+			<if test="residentpop != null and residentpop != ''">residentpop=#{residentpop},</if>
+			<if test="neargroup != null and neargroup != ''">neargroup=#{neargroup},</if>
+			<if test="highway != null and highway != ''">highway=#{highway},</if>
+			<if test="operator != null and operator != ''">operator=#{operator},</if>
+			<if test="operatorTime != null and operatorTime != ''">operatorTime=#{operatorTime},</if>
+		</trim>
+		where productid=#{productid}
+	</update>
+
+	<update id="updateLookInfo" parameterType="java.util.Map">
+		UPDATE trw_t_land set
+		lookmodel =#{model} where productid=#{productid}
+	</update>
+	<update id="updateLandFormMarket" parameterType="java.util.Map">
+		UPDATE
+		trw_t_land set faciid =#{faciid} where productid=#{productid}
+	</update>
+	<select id="selectLandByNeedId"
+		resultType="com.trw.model.TrwTLand" parameterType="java.util.Map">
+		select
+		a.productid,
+		a.productname,
+		a.transMode,
+		a.location,
+		a.address,
+		a.acreage,
+		a.purpose,
+		a.rentyear,
+		a.landNote,
+		a.rightscope,
+		a.coverimg
+		from
+		TRW_T_LAND a
+		INNER JOIN trw_t_recommend b ON a.productid=b.productid
+		WHERE b.needIds=#{needIds}
+	</select>
+	<select id="selectLandTitle" resultType="com.trw.model.TrwTLand">
+		SELECT
+		a.price,
+		a.coverimg,
+		a.productname,
+		a.earthSourceNote,
+		a.acreage,
+		a.purpose,
+		a.rentyear,
+		a.productid,
+		a.phoneCheck,
+		a.fieldCheck,
+		a.address,
+		IFNULL( a.updatetime, a.reporttime ) AS updatetime,
+		a.reporttime,
+		a.faciid,
+		a.agentId,
+		d.id,
+		d.aname,
+		c.lookfee,
+		c.num
+		FROM
+		trw_t_land a
+		LEFT JOIN trw_t_agent d ON a.agentId = d.id
+		LEFT JOIN trw_t_lookinfo c ON a.productid = c.productid
+		WHERE
+		a.faciid = #{faciid}
+		AND !ISNULL(a.agentId)
+	</select>
+
+<select id="selectAgentLandById"  resultType="com.trw.model.TrwTLand">
+		select
+		a.productid,
+		a.productname,
+		a.transMode,
+		a.location,
+		a.address,
+		a.acreage,
+		a.updatetime,
+		a.landContact,
+		a.phone,
+		a.purpose,
+		a.rentyear,
+		a.price,
+		a.landNote,
+		a.rightscope,
+		a.agentId,
+		a.coverimg
+		from TRW_T_LAND a
+		WHERE 
+		a.faciid = #{faciid}
+		and a.landState = '02'
+	    <if test="agentId != null and agentId != ''">
+	    and a.agentId=#{agentId}
+	    </if>
+   </select>
+</mapper>

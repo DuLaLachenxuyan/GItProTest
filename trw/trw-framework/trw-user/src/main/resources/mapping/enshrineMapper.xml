@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.EnshrineMapper">
+
+
+	<select id="selectPTS" resultType="com.trw.vo.Enshrine"
+		parameterType="java.util.Map">
+		SELECT
+		a.id,
+		a.landid,
+		a.ctypes,
+		a.ctime,
+		b.coverimg,
+		b.earthSourceNote,
+		b.phone,
+		b.landState,
+		b.rentyear,
+		b.price,
+		b.purpose,
+		b.landType,
+		b.acreage,
+		b.location,
+	    c.faciname,
+		c.mobile
+		from trw_t_land b
+		RIGHT JOIN
+		plat_t_enshrine a ON a.landid=b.productid
+		LEFT JOIN TRW_T_FACI c ON
+		c.faciid=b.faciid
+		WHERE a.ehrtype =#{ehrtype}
+		AND a.userid =#{userid}
+		<if test="oneTime != null and oneTime != '' ">
+			AND a.ctime &gt; DATE_FORMAT(#{oneTime},'%Y-%m-%d')
+		</if>
+		<if test="twoTime != null and twoTime != '' ">
+			AND a.ctime &lt; DATE_FORMAT(#{twoTime}, '%Y-%m-%d')
+		</if>
+		<if test="landType != null and landType != '' ">
+			AND b.landType = #{landType}
+		</if>
+		<if test="landState != null and landState != '' ">
+			AND b.landState = #{landState}
+		</if>
+		order by a.ctime desc
+	</select>
+
+	<!--用户收藏的土地需求 -->
+	<select id="findLandClient" resultType="java.util.Map"
+		parameterType="java.util.Map">
+		select
+		e.ctime,
+		e.ehrtype,
+		e.ctypes,
+		c.mtitle,
+		c.landState,
+		c.landType,
+		c.purpose,
+		c.needid,
+		c.minPrice,
+		c.maxPrice,
+		c.location,
+		c.rentyear,
+		c.updatetime,
+		c.minAcreage,
+		c.maxAcreage
+		from
+		trw_t_client c
+		INNER JOIN  plat_t_enshrine e on
+		e.landid= c.needid
+		where e.ehrtype="3"
+		<if test="userid != null and userid != '' ">
+			AND e.userid =#{userid}
+		</if>
+		<if test="landType != null and landType != '' ">
+			AND c.landType =#{landType}
+		</if>
+		<if test="landState != null and landState != '' ">
+			AND c.landState =#{groundSource}
+		</if>
+		order by e.ctime desc
+	</select>
+</mapper>

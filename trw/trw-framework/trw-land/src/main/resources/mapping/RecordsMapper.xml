@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.RecordsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.Records">
+        <id column="followid" property="followid"/>
+        <result column="ctName" property="ctName"/>
+        <result column="ctPhone" property="ctPhone"/>
+        <result column="followPerson" property="followPerson"/>
+        <result column="text" property="text"/>
+        <result column="operation" property="operation"/>
+        <result column="followTime" property="followTime"/>
+        <result column="id" property="id"/>
+    </resultMap>
+    <select id="selectBylandid" parameterType="java.lang.String" resultType="com.trw.model.Records">
+        SELECT
+		r.followid,
+		r.text,
+		r.followTime,
+		a.aname as followPerson,
+		r.id
+		FROM
+		trw_t_records r
+		INNER JOIN trw_t_agent a ON r.followPerson = a.id
+        <trim prefix="WHERE" prefixOverrides="AND |OR">
+            <if test="needid != null and needid != '' ">
+                r.id=#{needid}
+            </if>
+            <if test="productid != null and productid != '' ">
+                r.id=#{productid}
+            </if>
+            <if test="orderid != null and orderid != '' ">
+                r.id=#{orderid}
+            </if>
+        </trim>
+        order by followTime desc
+    </select>
+    <update id="updateRecords" parameterType="com.trw.model.Records">
+        UPDATE trw_t_records SET text=#{text} Where followid=#{followid}
+    </update>
+</mapper>

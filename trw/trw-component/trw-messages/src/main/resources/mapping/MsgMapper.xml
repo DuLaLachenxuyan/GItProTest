@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.MsgMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.trw.model.TrwTMsg">
+		<id column="id" property="id" />
+		<result column="msgtext" property="msgtext" />
+		<result column="userid" property="userid" />
+		<result column="createtime" property="createtime" />
+	</resultMap>
+
+	<select id="findMyMsg" resultMap="BaseResultMap"
+		parameterType="java.util.Map">
+		SELECT
+		m.id,m.msgtext,m.createtime
+		FROM
+		trw_t_msg m
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			<if test="userid != null and userid != '' ">
+				AND m.userid =#{userid}
+			</if>
+			<if test="starttime != null and starttime != '' ">
+				AND m.createtime &gt; DATE_FORMAT(#{starttime},
+				'%Y-%m-%d')
+			</if>
+			<if test="endtime != null and endtime != '' ">
+				AND m.createtime &lt; DATE_FORMAT(#{endtime}, '%Y-%m-%d')
+			</if>
+		</trim>
+	</select>
+</mapper>

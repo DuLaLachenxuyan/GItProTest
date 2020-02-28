@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.InitMapper">
+	<select id="findFaci" resultType="com.trw.model.TrwTFaci">
+		SELECT
+			faciid, faciname, state, 
+			DATE_FORMAT(authtime, '%Y-%m-%d') as authtime, 
+			DATE_FORMAT(endtime, '%Y-%m-%d') as endtime, 
+			contacts, cardnum, mobile, address, corporation, location, sertype,
+			 sercode, serlevel, serscore, goodperc, isident, rightscope, deposit, coverimg, images,
+			 agencyCounty,ptaryCounty,introduce
+		FROM
+			trw_t_faci
+	</select>
+</mapper>

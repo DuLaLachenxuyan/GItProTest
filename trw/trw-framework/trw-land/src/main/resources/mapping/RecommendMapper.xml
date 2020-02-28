@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.RecommendMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.Recommend">
+        <id column="remdlandID" property="remdlandID"/>
+        <result column="remdlandDetails" property="remdlandDetails"/>
+        <result column="recommendTime" property="recommendTime"/>
+        <result column="expirationTime" property="expirationTime"/>
+        <result column="recommendArea" property="recommendArea"/>
+        <result column="userId" property="userId"/>
+        <result column="productid" property="productid"/>
+        <result column="needIds" property="needIds"/>
+        <result column="types" property="types"/>
+        <result column="landState" property="landState"/>
+        <result column="position" property="position"/>
+        <result column="regional" property="regional"/>
+        <result column="state" property="state"/>
+    </resultMap>
+    <select id="selectRecommend"
+            resultType="com.trw.model.Recommend">
+        SELECT
+        productid,
+        remdlandDetails,
+        recommendTime,
+        expirationTime,
+        landState
+        FROM trw_t_recommend
+        WHERE userId=#{userId} And types=#{types}
+        <if test="text != null and text != '' ">
+            AND remdlandDetails like CONCAT('%',#{text},'%')
+        </if>
+        <if test="recommendArea != null and recommendArea != '' ">
+            AND recommendArea =#{recommendArea}
+        </if>
+        <if test="timeTwo != null and timeTwo != '' ">
+            and DATE_FORMAT(recommendTime,'%Y-%m-%d') &lt;=
+            DATE_FORMAT(#{timeTwo},'%Y-%m-%d')
+        </if>
+        <if test="timeOne != null and timeOne != '' ">
+            and DATE_FORMAT(recommendTime,'%Y-%m-%d') &gt;=
+            DATE_FORMAT(#{timeOne},'%Y-%m-%d')
+        </if>
+        order by recommendTime desc
+    </select>
+    <select id="selectRecommendLand"
+            resultType="com.trw.model.Recommend">
+        select
+        DATE_FORMAT(a.recommendTime,'%Y-%m-%d %H:%i:%S') as
+        recommendTime,
+        a.remdlandID,
+        a.productid,
+        b.productname as remdlandDetails,
+        b.landState
+        from trw_t_recommend a
+        inner join trw_t_land b on
+        a.productid= b.productid
+        where a.userId= #{userId}
+        And (a.types= '02' OR
+        a.types='03')
+        <if test="landState != null and landState != '' ">
+            AND b.landState =#{landState}
+        </if>
+        <if test="minTime != null and minTime != '' ">
+            AND DATE_FORMAT(a.recommendTime,'%Y-%m-%d') &gt;=
+            DATE_FORMAT(#{minTime},'%Y-%m-%d')
+        </if>
+        <if test="maxTime != null and minTime != '' ">
+            AND DATE_FORMAT(a.recommendTime,'%Y-%m-%d') &lt;=
+            DATE_FORMAT(#{maxTime},'%Y-%m-%d')
+        </if>
+        order by a.recommendTime desc
+    </select>
+
+    <delete id="deleteByRecommend"
+            parameterType="com.trw.model.Recommend">
+		DELETE FROM trw_t_recommend WHERE productid=#{productid}
+		And
+		needIds=#{needIds}
+	</delete>
+    <select id="selectFacitRecommend" parameterType="java.util.Map"
+            resultType="com.trw.model.FaciRecommend">
+        SELECT
+        a.remdlandID,
+        a.remdlandDetails,
+        a.recommendTime,
+        a.expirationTime,
+        a.productid,
+        a.regional,
+        a.position,
+        a.state,
+        a.recommendArea,
+        b.landState,
+        b.purpose,
+        b.coverimg
+        FROM trw_t_recommend a
+        INNER JOIN
+        trw_t_land b ON a.productid=b.productid
+        WHERE b.faciid=#{faciid} And
+        a.types='01'
+        <if test="currentTime !=null and currentTime !=''">
+            AND a.expirationTime &lt;=
+            DATE_FORMAT(#{currentTime},'%Y-%m-%d')
+        </if>
+        <if test="state != null and state != '' ">
+            AND a.state=#{state}
+        </if>
+        <if test="productname != null and productname != '' ">
+            AND a.remdlandDetails like CONCAT('%',#{productname},'%')
+        </if>
+        <if test="area != null and area != '' ">
+            AND b.location like CONCAT(#{area},'%')
+        </if>
+        <if test="recommendArea != null and recommendArea != '' ">
+            AND a.recommendArea=#{recommendArea}
+        </if>
+        <if test="position != null and position != '' ">
+            AND a.position=#{position}
+        </if>
+        <if test="recommendStartTime != null and recommendStartTime != '' ">
+            AND a.recommendTime &gt;=
+            DATE_FORMAT(#{recommendStartTime},'%Y-%m-%d')
+        </if>
+        <if test="recommendEndTime != null and recommendEndTime != '' ">
+            AND a.recommendTime &lt;=
+            DATE_FORMAT(#{recommendEndTime},'%Y-%m-%d')
+        </if>
+        <if
+                test="expirationStartTimeend != null and expirationStartTimeend != '' ">
+            AND a.expirationTime &gt;=
+            DATE_FORMAT(#{expirationStartTimeend},'%Y-%m-%d')
+        </if>
+        <if test="expirationEndTime != null and expirationEndTime != '' ">
+            AND a.expirationTime &lt;=
+            DATE_FORMAT(#{expirationEndTime},'%Y-%m-%d')
+        </if>
+        order by a.recommendTime desc
+    </select>
+    <update id="updateByid" parameterType="com.trw.model.Recommend">
+		update trw_t_recommend set
+		state=#{state} where remdlandID=#{remdlandID}
+	</update>
+
+    <select id="selectMatchLand" resultType="com.trw.vo.NoMatchLand">
+		SELECT
+		a.productid,
+		a.productname,
+		a.landContact,
+		a.phone,
+		b.needids,
+		b.userid,
+		b.types
+		FROM
+		trw_t_land a
+		LEFT JOIN trw_t_recommend b ON a.productid = b.productid
+		AND b.types = '03'
+		AND b.needIds = #{needId}
+		WHERE
+		a.faciid = #{faciid}
+		And a.groundSource='01'
+        AND a.earthSourceNote='01'
+	</select>
+
+    <select id="selectUnrdedLand" resultType="com.trw.model.TrwTLand" parameterType="java.util.Map">
+		select
+		a.productid,
+		a.productname,
+		a.reporter
+		from trw_t_land a
+		WHERE a.faciid=#{faciid} And a.landState='02'
+	</select>
+    <select id="selectMatchClient" resultType="com.trw.model.LandClient" parameterType="java.util.Map">
+    SELECT
+	a.landContact,
+	a.phone,
+	a.needid,
+	a.mtitle
+     FROM
+	 trw_t_client a
+     LEFT JOIN trw_t_recommend b ON a.needid = b.needIds
+     AND b.types = '02'
+     AND b.productid = #{productid}
+     WHERE
+	 b.needIds IS NULL
+	 And a.psource='01'
+    </select>
+    <select id="getLandRecommend" parameterType="java.lang.String" resultType="com.trw.model.Recommend">
+        SELECT
+        remdlandID
+        FROM trw_t_recommend
+        WHERE productid=#{productid} And types='01' And expirationTime &gt;
+            DATE_FORMAT(#{currentTime},'%Y-%m-%d %H:%m:%s')
+    </select>
+    <delete id="deleteByLandId" parameterType="java.util.Map">
+         DELETE FROM trw_t_recommend WHERE productid=#{productid}
+         And types=#{types}
+         And recommendArea=#{recommendArea}
+         And position=#{position}
+         And (expirationTime &lt;= DATE_FORMAT(#{currentTime},'%Y-%m-%d %H:%m:%s')
+         or state='03')
+    </delete>
+    <select id="selectUnrdedRecommend" parameterType="java.util.Map" resultType="com.trw.model.Recommend">
+        SELECT
+        remdlandID
+        FROM trw_t_recommend
+        WHERE recommendArea=#{recommendArea}
+        And position=#{position}
+        And expirationTime &gt; DATE_FORMAT(#{currentTime},'%Y-%m-%d %H:%m:%s')
+        And productid=#{productid}
+        And (state='01' OR state='04')
+    </select>
+</mapper>

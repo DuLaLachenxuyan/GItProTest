@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.AccDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.TrwTAccDetail">
+        <id column="id" property="id" />
+        <result column="accountId" property="accountId" />
+        <result column="orderId" property="orderId" />
+        <result column="createTime" property="createTime" />
+        <result column="fee" property="fee" />
+        <result column="fundFlow" property="fundFlow" />
+        <result column="fundType" property="fundType" />
+    </resultMap>
+	
+</mapper>

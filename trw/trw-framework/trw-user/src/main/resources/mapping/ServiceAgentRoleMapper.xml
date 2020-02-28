@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.ServiceAgentRoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.ServiceAgentRole">
+        <id column="arId" property="arId"/>
+        <result column="agentId" property="agentId"/>
+        <result column="roleId" property="roleId"/>
+        <result column="remark" property="remark"/>
+    </resultMap>
+    <select id="selectByAgentid" resultType="com.trw.model.ServiceAgentRole" parameterType="java.lang.String">
+     SELECT
+		arId,
+		agentId,
+		roleId,
+		remark
+    FROM trw_t_service_agent_role WHERE agentId=#{_parameter}
+    </select>
+
+</mapper>

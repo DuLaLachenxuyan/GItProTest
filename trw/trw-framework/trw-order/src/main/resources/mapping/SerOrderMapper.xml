@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.SerOrderMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.trw.model.TrwTOrder">
+		<id column="orderid" property="orderid" />
+		<result column="ordertime" property="ordertime" />
+		<result column="appointment" property="appointment" />
+		<result column="remark" property="remark" />
+		<result column="charges" property="charges" />
+		<result column="fee" property="fee" />
+		<result column="faciid" property="faciid" />
+		<result column="productid" property="productid" />
+		<result column="user_id" property="userId" />
+		<result column="takemodel" property="takemodel" />
+		<result column="orderstat" property="orderstat" />
+		<result column="ordertype" property="ordertype" />
+		<result column="num" property="num" />
+		<result column="agentId" property="agentId" />
+	</resultMap>
+	<select id="findServerOrder" resultType="com.trw.vo.SerOrder"
+		parameterType="java.util.Map">
+		SELECT
+		o.orderid,
+		o.ordertime,
+		o.appointment,
+		o.takemodel,
+		o.orderstat,
+		o.ordertype,
+		l.transMode,
+		l.productname,
+		l.landType,
+		l.acreage,
+		l.coverimg AS firstImg,
+		IFNULL(c.landContact,u.name) as cliname,
+		IFNULL(c.phone,u.phone) as clitel,
+		a.aname,
+		a.aphone
+		FROM TRW_T_ORDER o
+		INNER JOIN TRW_T_LAND l ON o.productid = l.productid
+		LEFT JOIN trw_t_client c ON o.user_id=c.needid
+		LEFT JOIN TRW_T_USER u ON o.user_id = u.userid
+		LEFT JOIN TRW_T_AGENT a ON o.agentId = a.id
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			<if test="faciid != null and faciid != '' ">
+				AND o.faciid =#{faciid}
+			</if>
+			<if test="agentId != null and agentId != '' ">
+				AND o.agentId =#{agentId}
+			</if>
+			<if test="aname != null and aname != '' ">
+				AND a.aname like concat(#{aname},'%')
+			</if>
+			<if test="ordertype != null and ordertype != '' ">
+				AND o.ordertype =#{ordertype}
+			</if>
+			<if test="orderstat != null and orderstat != '' ">
+				AND o.orderstat =#{orderstat}
+			</if>
+			<if test="startTime != null and startTime != '' ">
+				AND DATE_FORMAT(o.appointment,'%Y-%m-%d')<![CDATA[>=]]>
+				DATE_FORMAT(#{startTime},'%Y-%m-%d')
+			</if>
+			<if test="endTime != null and endTime != '' ">
+				AND DATE_FORMAT(o.appointment,'%Y-%m-%d') <![CDATA[<=]]>
+				DATE_FORMAT(#{endTime},'%Y-%m-%d')
+			</if>
+		</trim>
+	</select>
+
+
+	<select id="findFaciOrdDetail" resultType="com.trw.vo.SerOrder"
+		parameterType="java.util.Map">
+		SELECT
+		v.createtime,
+		v.angeopinion,
+		v.bevaltent,
+		o.orderid,
+		o.ordertime,
+		o.appointment,
+		o.takemodel,
+		o.orderstat,
+		o.charges,
+		o.ordertype,
+		o.fee,
+		l.address,
+		l.location,
+		l.purpose,
+		l.productid,
+		l.acreage,
+		l.rentyear,
+		l.transMode,
+		l.reporttime,
+		l.productname,
+		l.landType,
+		l.landContact,
+		l.phone as lphone,
+		l.coverimg as firstImg,
+	    IFNULL(c.landContact,u.name) as cliname,
+		IFNULL(c.phone,u.phone) as clitel,
+		a.aname,
+		a.portrait,
+		a.aphone
+		FROM
+		TRW_T_ORDER o
+		INNER JOIN TRW_T_LAND L ON o.productid = l.productid
+	    LEFT JOIN TRW_T_AGENT a ON o.agentId = a.id
+		left join trw_t_client c ON o.user_id = c.needid
+		LEFT JOIN trw_t_valuation v ON o.orderid = v.orderid
+		LEFT JOIN TRW_T_USER u ON o.user_id = u.userid
+		WHERE o.orderid = #{orderid}
+	</select>
+</mapper>

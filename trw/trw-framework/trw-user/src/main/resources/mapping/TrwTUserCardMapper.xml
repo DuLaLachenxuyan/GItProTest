@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.TrwTUserCardMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.TrwTUserCard">
+        <id column="id" property="id" />
+        <result column="userid" property="userid" />
+        <result column="realname" property="realname" />
+        <result column="carNumber" property="carNumber" />
+        <result column="carurl" property="carurl" />
+        <result column="status" property="status" />
+        <result column="failmsg" property="failmsg" />
+        <result column="createtime" property="createtime" />
+        <result column="reviewuser" property="reviewuser" />
+        <result column="reviewtime" property="reviewtime" />
+    </resultMap>
+
+</mapper>

@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.LandClientMapper">
+	<select id="selectLandClient"
+		resultType="com.trw.model.LandClient" parameterType="java.util.Map">
+		select
+		a.needid,
+		a.location,
+		a.landType,
+		a.purpose,
+		a.transMode,
+		a.landLabel,
+		a.minAcreage,
+		a.maxAcreage,
+		a.mtitle,
+		a.ownership,
+		a.reporttime,
+		a.updatetime,
+		a.minPrice,
+		a.maxPrice,
+		a.rentyear,
+		a.psource ,
+		a.landState,
+		a.phoneCheck
+		from
+		trw_t_client a
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			a.landState = '02'
+			and a.phoneCheck = '01'
+			and a.isDel = '01'
+			<if test="areaid != null and areaid != '' ">
+				AND a.location like CONCAT(#{areaid},'%')
+			</if>
+			<if test="landType != null and landType != '' ">
+				AND a.landtype =#{landType}
+			</if>
+			<if test="purpose != null and purpose != '' ">
+				AND a.purpose =#{purpose}
+			</if>
+			<if test="transMode != null and transMode != '' ">
+				AND a.transMode =#{transMode}
+			</if>
+			<if test="landLabel != null and landLabel != '' ">
+				AND a.landLabel =#{landLabel}
+			</if>
+			<if test="landPlaceMax != null and landPlaceMax != '' ">
+				and a.maxAcreage &lt; ${landPlaceMax}
+			</if>
+			<if test="landPlaceMin != null and landPlaceMin != '' ">
+				and a.minAcreage &gt;= ${landPlaceMin}
+			</if>
+			<if test="rentYearMax != null and rentYearMax != '' ">
+				and a.rentyear &lt; ${rentYearMax}
+			</if>
+			<if test="rentYearMin != null and rentYearMin != '' ">
+				and a.rentyear &gt;= ${rentYearMin}
+			</if>
+			<if test="text != null and text != ''">
+				and (
+				mtitle like CONCAT('%',#{text},'%')
+				)
+			</if>
+		</trim>
+		order by a.reporttime ${order}
+	</select>
+	<select id="selectByUserid"
+		resultType="com.trw.model.LandClient">
+		SELECT
+		a.needid,
+		a.mtitle,
+		a.location,
+		a.landType,
+		a.reporttime,
+		a.updatetime,
+		a.minAcreage,
+		a.maxAcreage,
+		a.minPrice,
+		a.maxPrice,
+		a.landLabel,
+		a.reporter,
+		b.userid
+		FROM
+		trw_t_client
+		a
+		LEFT JOIN trw_t_user b
+		ON a.reporter =
+		b.userid
+		WHERE
+		userid = #{userId}
+	</select>
+
+	<select id="selectByTerm" resultType="com.trw.model.LandClient"
+		parameterType="java.util.Map">
+		SELECT
+		landContact,
+		phone,
+		transMode,
+		needid,
+		mtitle,
+		location,
+		landType,
+		reporttime,
+		updatetime,
+		minAcreage,
+		maxAcreage,
+		minPrice,
+		maxPrice,
+		landLabel,
+		reporter,
+		landState,
+		isDel
+		FROM
+		trw_t_client
+		WHERE reporter = #{userId}
+		<if test="transMode != null and transMode != '' ">
+			AND transMode =#{transMode}
+		</if>
+		<if test="landState != null and landState != '' ">
+			AND landState =#{landState}
+		</if>
+		<if test="landType != null and landType != '' ">
+			AND landType =#{landType}
+		</if>
+		<if test="startTime != null and startTime != '' ">
+			AND DATE_FORMAT(reporttime,'%Y-%m-%d') &gt;=
+			DATE_FORMAT(#{startTime},'%Y-%m-%d')
+		</if>
+		<if test="endTime != null and endTime != '' ">
+			AND DATE_FORMAT(reporttime,'%Y-%m-%d') &lt;=
+			DATE_FORMAT(#{endTime},'%Y-%m-%d')
+		</if>
+		AND isDel = '01'
+		order by reporttime desc
+	</select>
+
+	<select id="selectClient" resultType="com.trw.vo.ClientVo">
+		SELECT
+		a.needid,
+		a.mtitle,
+		a.agentid,
+		a.transMode,
+		a.reporttime,
+		a.updatetime,
+		a.landContact,
+		a.phone,
+		a.psource,
+		a.landType,
+		a.landState,
+		a.minAcreage,
+		a.maxAcreage,
+		b.aname,
+		b.id,
+		a.ingrade,
+		a.faciid,
+		a.phoneCheck
+		FROM trw_t_client a
+		LEFT JOIN
+		trw_t_agent b
+		ON a.agentid =
+		b.id
+		WHERE a.faciid = #{faciid}
+		<if test="landContact != null and landContact != '' ">
+			AND a.landContact LIKE CONCAT('%',#{landContact},'%')
+		</if>
+		<if test="phone != null and phone != '' ">
+			AND a.phone LIKE CONCAT('%',#{phone},'%')
+		</if>
+		<if test="angentId != null and angentId != '' ">
+			AND b.id = #{angentId}
+		</if>
+		<if test="ingrade != null and ingrade != '' ">
+			AND a.ingrade =#{ingrade}
+		</if>
+		<if test="landState != null and landState != '' ">
+			AND a.landState =#{landState}
+		</if>
+		<if test="landType != null and landType != '' ">
+			AND a.landType =#{landType}
+		</if>
+		<if test="minTime != null and minTime != '' ">
+			AND DATE_FORMAT(a.updatetime,'%Y-%m-%d') <![CDATA[>=]]>
+			DATE_FORMAT(#{minTime},'%Y-%m-%d')
+		</if>
+		<if test="maxTime != null and maxTime != '' ">
+			AND DATE_FORMAT(a.updatetime,'%Y-%m-%d') <![CDATA[<=]]>
+			DATE_FORMAT(#{maxTime},'%Y-%m-%d')
+		</if>
+		<if test="minAcreage != null and minAcreage != '' ">
+			and a.minAcreage &gt; ${minAcreage}
+		</if>
+		<if test="maxAcreage != null and maxAcreage != '' ">
+			and a.maxAcreage &lt; ${maxAcreage}
+		</if>
+		<if test="psource != null and psource != '' ">
+			AND a.psource =#{psource}
+		</if>
+		<if test="mtitle != null and mtitle != '' ">
+			AND a.mtitle LIKE CONCAT('%',#{mtitle},'%')
+		</if>
+		order by a.updatetime desc
+	</select>
+	<update id="updateAgentId" parameterType="java.util.Map">
+		update trw_t_client set
+		agentid=#{agentId} where needid=#{needid}
+	</update>
+	<select id="selectTrwClient"
+		resultType="com.trw.model.LandClient" parameterType="java.util.Map">
+		select b.needid
+		,b.landContact,b.phone,b.reporter,b.mtitle from trw_t_user a inner
+		join trw_t_client b on a.userid =b.reporter
+		WHERE b.faciid = #{id}
+	</select>
+	<select id="selectSimilar"
+		parameterType="com.trw.model.LandClient" resultType="java.util.Map">
+		SELECT
+		needid,
+		mtitle,
+		landType,
+		minPrice,
+		maxPrice
+		FROM trw_t_client
+		WHERE
+		psource='01'
+		AND
+		landType like
+		CONCAT('%',#{landType},'%') or location like
+		CONCAT('%',#{location},'%')
+	</select>
+	<select id="selectAgentClient"
+		resultType="com.trw.model.LandClient" parameterType="java.lang.String">
+		SELECT
+		a.needid,
+		a.landContact,
+		a.phone
+		FROM trw_t_client a
+		WHERE a.agentid = #{agentid}
+	</select>
+	<select id="selectMatched">
+		SELECT
+		a.needid,
+		a.mtitle,
+		a.landContact,
+		a.phone
+		FROM
+		trw_t_client a
+		INNER JOIN trw_t_recommend b ON a.needid=b.needids
+		WHERE
+		b.productid=#{productid} And b.types='02'
+	</select>
+	<select id="getLandClientByFaciId"
+		resultType="com.trw.model.LandClient" parameterType="java.util.Map">
+		SELECT
+		a.needid,
+		a.landContact,
+		a.phone,
+		a.psource,
+		a.landType,
+		a.landState,
+		a.location
+		FROM trw_t_client a
+		WHERE a.landState='02'
+		and
+		a.faciid = #{faciid}
+		<if test="agentId != null and agentId != '' ">
+			AND a.agentid = #{agentId}
+		</if>
+	</select>
+</mapper>

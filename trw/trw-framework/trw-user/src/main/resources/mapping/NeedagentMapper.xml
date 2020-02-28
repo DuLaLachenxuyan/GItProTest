@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.NeedagentMapper">
+
+  <insert id="insertIn" parameterType="com.trw.model.TrwTNeedagent">
+        INSERT INTO trw_t_needagent(id,needid,agentId,userId,updateTime) VALUES
+        (#{id},#{needid},#{agentId},#{userId},#{updateTime})
+    </insert>
+	
+</mapper>

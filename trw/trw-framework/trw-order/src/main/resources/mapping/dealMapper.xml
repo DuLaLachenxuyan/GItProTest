@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.DealMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.trw.model.TrwTDeal">
+		<id column="id" property="id" />
+		<result column="dealid" property="dealid" />
+		<result column="dealtime" property="dealtime" />
+		<result column="seller" property="seller" />
+		<result column="sellID" property="sellID" />
+		<result column="selladdress" property="selladdress" />
+		<result column="sellbank" property="sellbank" />
+		<result column="sellbanknum" property="sellbanknum" />
+		<result column="sellbankbranch" property="sellbankbranch" />
+		<result column="buyer" property="buyer" />
+		<result column="buytel" property="buytel" />
+		<result column="buyID" property="buyID" />
+		<result column="buyaddress" property="buyaddress" />
+		<result column="buybank" property="buybank" />
+		<result column="buybanknum" property="buybanknum" />
+		<result column="buybankbranch" property="buybankbranch" />
+		<result column="productname" property="productname" />
+		<result column="location" property="location" />
+		<result column="detailaddr" property="detailaddr" />
+		<result column="sellfile" property="sellfile" />
+		<result column="buyfile" property="buyfile" />
+		<result column="createtime" property="createtime" />
+		<result column="aname" property="aname" />
+		<result column="dealstat" property="dealstat" />
+		<result column="agentid" property="agentid" />
+		<result column="faciid" property="faciid" />
+		<result column="dealprice" property="dealprice" />
+	</resultMap>
+	<select id="findDeal" resultMap="BaseResultMap" parameterType="java.util.Map">
+		select
+		id,dealid,dealtime,productname,seller,buyer,aname,dealstat,dealprice
+		from trw_t_deal d
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			<if test="faciid != null and faciid != '' ">
+				AND d.faciid =#{faciid}
+			</if>
+			<if test="agentid != null and agentid != '' ">
+				AND d.agentid =#{agentid}
+			</if>
+			<if test="aname != null and aname != '' ">
+				AND d.aname like concat(#{aname},'%')
+			</if>
+			<if test="dealstat != null and dealstat != '' ">
+				AND d.dealstat =#{dealstat}
+			</if>
+			<if test="onetime != null and onetime != '' ">
+				AND DATE_FORMAT(d.dealtime,
+				'%Y-%m-%d') <![CDATA[>=]]>
+				DATE_FORMAT(#{onetime},'%Y-%m-%d')
+			</if>
+			<if test="twotime != null and twotime != '' ">
+				AND DATE_FORMAT(d.dealtime,
+				'%Y-%m-%d') <![CDATA[<=]]>
+				DATE_FORMAT(#{twotime},'%Y-%m-%d')
+			</if>
+		</trim>
+	</select>
+
+	<select id="getDetail" resultType="com.trw.vo.DealDetail">
+		select
+		d.id,
+		d.dealid,
+		d.dealtime,
+		d.seller,
+		d.sellID,
+		d.selladdress,
+		d.selltel,
+		d.buyer,
+		d.buyID,
+		d.buyaddress,
+		d.buytel,
+		d.aname,
+		d.dealstat,
+		d.dealprice,
+		d.createtime,
+		d.productname,
+		d.address,
+		l.rentyear,
+		l.purpose,
+		l.location
+		from
+		trw_t_deal d
+		LEFT JOIN trw_t_land l ON
+		d.productid =l.productid
+		where d.dealid= #{dealid}
+	</select>
+</mapper>

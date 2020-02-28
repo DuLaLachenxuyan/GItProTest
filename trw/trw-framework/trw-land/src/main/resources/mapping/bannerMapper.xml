@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.BannerMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.TrwTBimg">
+        <id column="id" property="id" />
+        <result column="imgname" property="imgname" />
+        <result column="imgurl" property="imgurl" />
+        <result column="userid" property="userid" />
+        <result column="uptime" property="uptime" />
+    </resultMap>
+	<select id="selectBanner" resultType="com.trw.model.TrwTBimg">
+		select id,imgname,imgurl,userid,uptime
+		from TRW_T_BIMG
+		order by id DESC limit 5 
+	</select>
+</mapper>

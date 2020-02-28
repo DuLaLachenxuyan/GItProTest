@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.FaciMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.trw.model.TrwTFaci">
+		<id column="faciid" property="faciid" />
+		<result column="faciname" property="faciname" />
+		<result column="state" property="state" />
+		<result column="authtime" property="authtime" />
+		<result column="endtime" property="endtime" />
+		<result column="contacts" property="contacts" />
+		<result column="mobile" property="mobile" />
+		<result column="address" property="address" />
+		<result column="corporation" property="corporation" />
+		<result column="sertype" property="sertype" />
+		<result column="sercode" property="sercode" />
+		<result column="serlevel" property="serlevel" />
+		<result column="serscore" property="serscore" />
+		<result column="goodperc" property="goodperc" />
+		<result column="isident" property="isident" />
+		<result column="rightscope" property="rightscope" />
+	</resultMap>
+
+	<select id="selectMainFaci" resultType="com.trw.model.TrwTFaci"
+		parameterType="java.util.Map">
+		SELECT
+		a.faciid ,
+		a.faciname,
+		a.contacts,
+		a.mobile,
+		a.address,
+		a.location,
+		a.sertype,
+		a.serlevel,
+		a.serscore,
+		a.goodperc,
+		a.isident,
+		a.rightscope,
+		a.images,
+		a.coverimg
+		from TRW_T_FACI a
+		INNER JOIN trw_t_service_score b ON a.faciid=b.faciid
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			<if test="areaid != null and areaid != '' ">
+				AND a.location like CONCAT(#{areaid},'%')
+			</if>
+			<if test="mainName != null and mainName != '' ">
+				OR a.faciname like CONCAT(#{mainName},'%')
+			</if>
+			<if test="mainName != null and mainName != '' ">
+				OR a.address like CONCAT(#{mainName},'%')
+			</if>
+
+		</trim>
+		order by b.totalscore desc
+	</select>
+	<select id="getFaciByLoc" resultType="com.trw.model.TrwTFaci"
+		parameterType="string">
+		select
+		faciid,faciname,state,authtime,endtime
+		,contacts,mobile
+		,address,corporation
+		,location,sertype,sercode,serlevel
+		,serscore,goodperc,isident,rightscope,images
+		from trw_t_faci
+		where #{location} like CONCAT(location,'%')
+	</select>
+	<select id="selectOrderFaci" resultType="com.trw.vo.OrderFaci"
+		parameterType="java.lang.String">
+		SELECT
+		b.location,
+		b.acreage,
+		b.purpose,
+		b.transMode,
+		c.aname,
+		d.name,
+		a.angeopinion,
+		b.imgs,
+		a.endangeopin,
+		a.createtime
+		from trw_t_valuation a
+		INNER JOIN TRW_T_LAND b ON a.productid = b.productid
+		INNER JOIN trw_t_agent c ON a.angentid = c.id
+		INNER JOIN TRW_T_USER d ON a.userid = d.userid
+		WHERE b.faciid = #{faciid}
+	</select>
+</mapper>

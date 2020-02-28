@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.TrwTValuationMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.trw.model.TrwTValuation">
+		<id column="id" property="id" />
+		<result column="orderid" property="orderid" />
+		<result column="userid" property="userid" />
+		<result column="angentid" property="angentid" />
+		<result column="createtime" property="createtime" />
+		<result column="centent" property="centent" />
+	</resultMap>
+	<select id="selectMyValution" resultType="java.util.Map">
+		select
+		a.id,
+		a.angeopinion,
+		a.angentid,
+		a.createtime,
+		a.bevaltent,
+		c.aname,
+		b.phone
+		FROM trw_t_valuation a
+		LEFT JOIN trw_t_user b
+		ON a.userid =
+		b.userid
+		LEFT JOIN trw_t_agent c
+		ON a.angentid=c.id
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			<if test="faciid != null and faciid != '' ">
+				AND a.faciid = #{faciid}
+			</if>
+			<if test="angeopinion != null and angeopinion != '' ">
+				AND a.angeopinion = #{angeopinion}
+			</if>
+			<if test="agentid != null and agentid != '' ">
+				AND a.angentid = #{agentid}
+			</if>
+			<if test="startTime != null and startTime != '' ">
+				AND DATE_FORMAT(a.createtime,'%Y-%m-%d') <![CDATA[>=]]>
+				DATE_FORMAT(#{startTime},'%Y-%m-%d')
+			</if>
+			<if test="endTime != null and endTime != '' ">
+				AND DATE_FORMAT(a.createtime,'%Y-%m-%d') <![CDATA[<=]]>
+				DATE_FORMAT(#{endTime},'%Y-%m-%d')
+			</if>
+		</trim>
+	</select>
+</mapper>

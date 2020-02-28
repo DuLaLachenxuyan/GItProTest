@@ -1,0 +1,8 @@
+FROM java
+VOLUME /tmp
+ADD trw-filemanager.jar app.jar
+RUN bash -c 'touch /app.jar'
+EXPOSE 8105
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar","--spring.profiles.active=prod"]
+ENV TZ=Asia/Shanghai
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.TNewsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.TNews">
+        <id column="newsId" property="newsId" />
+        <result column="title" property="title" />
+        <result column="content" property="content" />
+        <result column="publishDate" property="publishDate" />
+        <result column="author" property="author" />
+        <result column="typeId" property="typeId" />
+        <result column="click" property="click" />
+        <result column="isHead" property="isHead" />
+        <result column="isImage" property="isImage" />
+        <result column="imageName" property="imageName" />
+        <result column="isHot" property="isHot" />
+        <result column="typeName" property="typeName" />
+        <result column="newsNote" property="newsNote" />
+    </resultMap>
+    <select id="selectMainNews" resultType="com.trw.model.TNews">
+       SELECT b.newsTypeId AS typeId, b.typeName, a.newsId, a.title, a.content, a.imageName, a.newsNote,a.author
+		 FROM t_newstype b INNER JOIN t_news a ON b.newsTypeId = a.typeId 
+		WHERE isImage = 1 
+		ORDER BY publishDate DESC LIMIT 0, 8
+    </select>
+   
+    <select id="selectNews" resultType="com.trw.model.TNews" parameterType="java.lang.String">
+        SELECT
+        newsId,
+        title,
+        content,
+        imageName,
+        author,
+        newsNote
+        FROM t_news WHERE newsNote=#{newsNote} ORDER BY publishDate DESC limit 0,3
+    </select>
+    <select id="selectHsbNews" resultType="com.trw.model.TNews">
+        SELECT
+        newsId,
+        title,
+        content,
+        author,
+        imageName,
+        newsNote
+        FROM t_news ORDER BY publishDate DESC limit 0,3
+    </select>
+    
+    <select id="selectNewsHome" resultType="com.trw.model.TNews">
+	       select 
+		       a.newsTypeId as typeId,
+		       a.typeName,
+		       b.newsId,
+		       date_format(b.publishDate, '%m-%d') as publishDate,
+		       IFNULL(b.isHot,0) as isHot,
+		       IFNULL(b.isImage,0) as isImage,
+		       IFNULL(b.isHead,0) as isHead,
+		       b.imageName,
+		       b.content,
+		       b.author,
+		       b.title 
+	       from t_newstype a inner join t_news b on a.newsTypeId=b.typeId
+			where date(b.publishDate)> DATE_SUB(CURDATE(), INTERVAL 365 DAY)
+			order by a.newsTypeId,b.publishDate desc
+    </select>
+    
+    <select id="selectNewsType" parameterType="java.lang.String" resultType="com.trw.model.TNews">
+		select 
+		       a.newsTypeId as typeId,
+		       a.typeName,
+		       b.newsId,
+		       date_format(b.publishDate, '%Y-%m-%d') as publishDate,
+		       IFNULL(b.isImage,0) as isImage,
+		       b.imageName,
+		       b.content,
+		       b.title,
+			   b.author,
+			   b.newsNote
+	       from t_newstype a inner join t_news b on a.newsTypeId=b.typeId
+			where  a.newsTypeId =#{typeId}
+			order by b.publishDate desc		 	 
+    </select>
+</mapper>

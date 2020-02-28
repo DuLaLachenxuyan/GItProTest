@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.AccountMapper">
+
+
+	<select id="selectAccDetail" resultType="com.trw.vo.AccountVo">
+		select
+		a.userid,
+		a.balance,
+		a.retimes,
+		a.deposit,
+		b.id,
+		DATE_FORMAT(b.createTime,'%Y-%m-%d %H:%i:%S') as createTime,
+		b.total_amount as totalAmount,
+		b.fundFlow,
+		b.fundType,
+		b.body,
+		b.trade_no as tradeNo
+		from trw_t_account a INNER JOIN trw_t_acc_detail b
+		ON a.userid = b.userid
+		WHERE a.userid = #{userId}
+		<if test="airtime != null and airtime != '' ">
+			AND createTime &gt;= DATE_FORMAT(#{airtime},'%Y-%m-%d')
+		</if>
+		<if test="endtime != null and endtime != '' ">
+			AND createTime &lt;= DATE_FORMAT(#{endtime}, '%Y-%m-%d')
+		</if>
+		<if test="fundFlow != null and fundFlow != '' ">
+			AND fundFlow =#{fundFlow}
+		</if>
+		<if test="fundType != null and fundType != '' ">
+			AND fundType =#{fundType}
+		</if>
+		ORDER BY createTime DESC
+	</select>
+</mapper>

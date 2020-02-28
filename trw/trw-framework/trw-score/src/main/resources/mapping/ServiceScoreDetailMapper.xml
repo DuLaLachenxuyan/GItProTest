@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.ServiceScoreDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.ServiceScoreDetail">
+        <id column="id" property="id"/>
+        <result column="date" property="date"/>
+        <result column="type" property="type"/>
+        <result column="score" property="score"/>
+        <result column="faciid" property="faciid"/>
+        <result column="ruleid" property="ruleid"/>
+    </resultMap>
+    <select id="selectByFaciId" resultType="com.trw.vo.ScoreDetailRule" parameterType="java.lang.String">
+     SELECT
+     a.id,
+     a.date,
+     a.type,
+     a.score,
+     a.faciid,
+     a.ruleid,
+     a.productid,
+     b.description
+     FROM trw_t_service_score_detail a
+     LEFT JOIN trw_t_service_score_rule b ON a.ruleid=b.ruleid
+     WHERE faciid=#{_parameter}
+     order by a.date desc
+</select>
+</mapper>

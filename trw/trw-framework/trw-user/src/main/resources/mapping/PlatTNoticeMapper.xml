@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.PlatTNoticeMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.trw.model.PlatTNotice">
+		<id column="id" property="id" />
+		<result column="title" property="title" />
+		<result column="type" property="type" />
+		<result column="content" property="content" />
+		<result column="createtime" property="createtime" />
+		<result column="creater" property="creater" />
+	</resultMap>
+	<select id="findNotices" parameterType="java.util.Map"
+		resultType="com.trw.model.PlatTNotice">
+		SELECT
+		n.id,
+		n.title,
+		n.content,
+		n.createtime,
+		n.creater,
+		n.type
+		FROM
+		plat_t_notice n
+		<trim prefix="WHERE" prefixOverrides="AND |OR">
+			<if test="title != null and title != '' ">
+				AND n.title like concat(#{title},'%')
+			</if>
+			<if test="creater != null and creater != '' ">
+				AND n.creater =#{creater}
+			</if>
+			<if test="type != null and type != '' ">
+				AND n.type =#{type}
+			</if>
+			<if test="starttime != null and starttime != '' ">
+				AND DATE_FORMAT(n.createtime,'%Y-%m-%d') <![CDATA[>=]]>
+				DATE_FORMAT(#{starttime},'%Y-%m-%d')
+			</if>
+			<if test="endtime != null and endtime != '' ">
+				AND DATE_FORMAT(n.createtime,'%Y-%m-%d') <![CDATA[<=]]>
+				DATE_FORMAT(#{endtime}, '%Y-%m-%d')
+			</if>
+		</trim>
+		order by n.createtime desc
+	</select>
+</mapper>

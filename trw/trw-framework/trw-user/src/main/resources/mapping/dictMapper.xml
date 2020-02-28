@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.DictMapper">
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.vo.CodeVo">
+        <id column="dickey" property="dickey" />
+        <result column="dictype" property="dictype" />
+        <result column="dicname" property="dicname" />
+        <result column="remark" property="remark" />
+        <collection property="children" javaType="java.util.ArrayList" ofType="com.trw.vo.CodeSunVo">
+        	<id column="dickey" property="dickey" />
+        	<result column="dictype" property="dictype" />
+        	<result column="diclabel" property="diclabel" />
+        	<result column="diccode" property="diccode" />
+			<result column="cmin" property="min" />
+			<result column="cmax" property="max" />
+			<result column="remark" property="remark" />
+        	<result column="pkey" property="pkey" />
+        </collection>
+    </resultMap>
+    
+	<select id="selectCode" resultMap="BaseResultMap">
+		 SELECT
+			dictype,
+			diclabel,
+			diccode,
+			cmin,
+			cmax,
+			dicname,
+			remark,
+			pkey,
+			dickey
+		FROM
+			TRW_T_DICT
+		<if test="types != null">  
+	        where dictype in(  
+	            <foreach collection="types" item="type" index="index" separator="," >    
+	                #{type}   
+	            </foreach>  
+	        )     
+	    </if>  
+		order by dictype,orderby
+	</select>
+</mapper>

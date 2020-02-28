@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.AgentDetailMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.AgentDetail">
+        <id column="id" property="id" />
+        <result column="workage" property="workage" />
+        <result column="level" property="level" />
+        <result column="grade" property="grade" />
+        <result column="lookNum" property="lookNum" />
+        <result column="subsidyNum" property="subsidyNum" />
+        <result column="isHost" property="isHost" />
+        <result column="dealNum" property="dealNum" />
+    </resultMap>
+
+</mapper>

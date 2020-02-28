@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.AgentLoginMapper">
+	<select id="getRoleByAgentId" resultType="java.lang.String" parameterType="java.lang.String">
+	     SELECT
+			roleId 
+	     FROM trw_t_service_agent_role WHERE agentId=#{_parameter}
+    </select>
+    
+	<select id="getAgentPermissions" resultType="java.lang.String" parameterType="java.lang.String">
+	     SELECT m.perms FROM trw_t_service_menu m
+				LEFT JOIN trw_t_service_role_menu rm ON m.menuId = rm.menuId
+				LEFT JOIN trw_t_service_agent_role ar ON rm.roleId = ar.roleId
+				WHERE ar.agentId=#{_parameter} AND m.type in(1,2) and m.status=1 
+    </select>
+    
+	<select id="getAllPermissions" resultType="java.lang.String">
+	     SELECT m.perms FROM trw_t_service_menu m
+		 WHERE m.type in(1,2) and m.status=1 
+    </select>
+    
+</mapper>

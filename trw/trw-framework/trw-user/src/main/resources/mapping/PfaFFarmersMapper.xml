@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.PfaFFarmersMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.PfaFFarmers">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="sex" property="sex"/>
+        <result column="avatar" property="avatar"/>
+        <result column="idcard" property="idcard"/>
+        <result column="companyName" property="companyName"/>
+        <result column="position" property="position"/>
+        <result column="eduback" property="eduback"/>
+        <result column="workingAddress" property="workingAddress"/>
+        <result column="registeredResidence" property="registeredResidence"/>
+        <result column="lengthService" property="lengthService"/>
+        <result column="scale" property="scale"/>
+        <result column="phone" property="phone"/>
+        <result column="introduction" property="introduction"/>
+        <result column="location" property="location"/>
+        <result column="farmerType" property="farmerType"/>
+        <result column="farmerTransMode" property="farmerTransMode"/>
+        <result column="transModeUse" property="transModeUse"/>
+        <result column="certification" property="certification"/>
+    </resultMap>
+
+    <select id="selectMin" resultType="com.trw.model.PfaFFarmers" parameterType="java.util.Map">
+        SELECT
+        a.id,
+        a.name,
+        a.sex,
+        a.avatar,
+        a.lengthService,
+        a.farmerType,
+        a.introduction,
+        a.farmerTransMode,
+        a.transModeUse,
+        a.certification
+        FROM pfa_f_farmers a
+        LEFT JOIN pfa_f_recommend b ON a.id=b.farmerID
+        WHERE b.recommendPosition='02'
+        <if test="location != null and location != '' ">
+            AND location like CONCAT(#{location},'%')
+        </if>
+        <if test="farmerType != null and farmerType != '' ">
+            AND farmerType =#{farmerType}
+        </if>
+        <if test="farmerTransMode != null and farmerTransMode != '' ">
+            AND farmerTransMode =#{farmerTransMode}
+        </if>
+        <if test="transModeUse != null and transModeUse != '' ">
+            AND transModeUse =#{transModeUse}
+        </if>
+    </select>
+    <select id="selectRecommend" resultType="com.trw.model.PfaFFarmers" parameterType="java.util.Map">
+        SELECT
+        a.id,
+        a.name,
+        a.avatar,
+        a.lengthService,
+        a.introduction
+        FROM pfa_f_farmers a
+        LEFT JOIN pfa_f_recommend b ON a.id=b.farmerID
+        WHERE b.recommendPosition= '01'
+    </select>
+
+</mapper>

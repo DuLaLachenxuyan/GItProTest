@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.ServiceRoleMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.ServiceRole">
+        <id column="roleId" property="roleId" />
+        <result column="roleName" property="roleName" />
+        <result column="createTime" property="createTime" />
+        <result column="createUser" property="createUser" />
+        <result column="remark" property="remark" />
+    </resultMap>
+    
+    <select id="getAllRole" resultType="com.trw.model.ServiceRole">
+    	SELECT roleId,roleName
+    	FROM trw_t_service_role
+    </select>
+
+</mapper>

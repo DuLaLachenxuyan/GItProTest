@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.FileMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.model.TrwTFile">
+        <id column="f_id" property="fId" />
+        <result column="file_name" property="fileName" />
+        <result column="ext" property="ext" />
+        <result column="exp_date" property="expDate" />
+        <result column="update_time" property="updateTime" />
+        <result column="update_by" property="updateBy" />
+    </resultMap>
+    
+    <update id="updateFile" parameterType="java.util.Map">
+    	 update trw_t_file set exp_date=null, update_time =now(),update_by=#{userId}
+		<if test="imgs != null">  
+	        where file_name in(  
+	            <foreach collection="imgs" item="img" index="index" separator="," >    
+	                #{img}   
+	            </foreach>  
+	        )     
+	    </if>  
+    </update>
+    
+    <select id="selecOverData" resultMap="BaseResultMap">
+    	select 
+    		f_id,file_name,ext,exp_date,update_time,update_by
+    	 from trw_t_file 
+    	 where 
+    	 	exp_date >now() 
+    	 	and update_time is null 
+    	 	and update_by is null
+    </select>
+    
+    <delete id="deleteOverData">
+    	 delete from 
+    	 	trw_t_file 
+    	 where 
+    	 	exp_date &lt; now() 
+    	 	and update_time is null 
+    	 	and update_by is null
+    </delete>
+
+</mapper>

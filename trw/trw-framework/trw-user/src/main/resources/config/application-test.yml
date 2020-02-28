@@ -1,0 +1,103 @@
+server:
+  port: 8110
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8701/eureka
+    instance:
+      prefer-ip-address: true
+
+spring:
+  application:
+    name: trw-user
+  datasource:
+    #数据源名称
+    name: trw
+    url: jdbc:mysql://192.168.10.55:3306/trwdev?autoReconnect=true&autoReconnectForPools=true&useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    username: test03
+    password: test003
+    #使用druid数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    #配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat
+    #连接池中最大的活跃连接数
+    max-active: 20
+    #启动连接池时，初始建立的连接数量
+    initial-size: 10
+    #连接池等待连接返回的最大等待时间，毫秒单位
+    max-wait: 60000
+    #连接池最大的空闲连接数量
+    max-idle: 8
+    #连接的最小值
+    min-idle: 8
+    #指定空闲连接检查、废弃连接清理、空闲连接池大小调整之间的操作时间间隔
+    time-between-eviction-runs-millis: 60000
+    #指定一个空闲连接最少空闲多久后可被清除
+    min-evictable-idle-time-millis: 300000
+    #获取连接时连接校验的sql查询语句
+    validationQuery: select 'x'
+    #连接空闲时，是否执行连接测试
+    test-while-idle: true
+    #当从连接池借用连接时，是否测试该连接
+    test-on-borrow: false
+    #在连接归还到连接池时是否测试该连接
+    test-on-return: false
+    #指定是否池化statements
+    pool-prepared-statements: true
+    #最大的打开的prepared statements数量
+    max-open-prepared-statements: 20
+  redis:
+    host: localhost
+    port: 6379
+    pool:
+      max-active: 8
+      max-idle: 8
+      min-idle: 0
+      max-wait: -1
+    timeout: 3000
+
+feign:
+  hystrix: 
+    enabled: true
+  compression:
+    request:
+      enabled: true 
+    response:
+      enabled: true
+  httpclient: ## 配置httpclient线程池
+    enabled: true
+  okhttp:
+    enabled: false    
+
+hystrix: 
+  command: 
+    default: 
+      execution: 
+        isolation: 
+           thread: 
+             timeoutInMilliseconds: 5000
+###################  mybatis-plus配置  ###################
+mybatis-plus:
+  mapper-locations: classpath:/mapping/*.xml
+  typeAliasesPackage: com.trw.model
+  global-config:
+    id-type: 0  #0:数据库ID自增   1:用户输入id  2:全局唯一id(IdWorker)  3:全局唯一ID(uuid)
+    db-column-underline: false
+    refresh-mapper: true
+    logic-delete-value: 0
+    logic-not-delete-value: 1
+    sql-injector: com.baomidou.mybatisplus.mapper.LogicSqlInjector
+  configuration:
+    map-underscore-to-camel-case: false
+    cache-enabled: true #配置的缓存的全局开关
+    lazyLoadingEnabled: true #延时加载的开关
+    multipleResultSetsEnabled: true #开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql语句,调试用
+   
+#==================== 日志  ============================
+logging:
+  level:
+    root: info
+  path: /logs/${spring.application.name}

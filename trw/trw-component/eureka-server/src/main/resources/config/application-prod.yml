@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: eureka-server
+server:
+  port: 8701
+
+eureka:
+  server:
+    peer-node-read-timeout-ms: 800 #节点间的读数据连接超时时间
+  instance:
+    hostname: localhost
+    preferIpAddress: true
+  client:
+    registerWithEureka: false
+    fetchRegistry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+      
+#==================== 日志  ============================
+logging:
+  level:
+    root: info
+  path: /logs/${spring.application.name}

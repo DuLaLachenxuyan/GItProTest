@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.AgentMapper">
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.trw.model.TrwTAgent">
+		<id column="id" property="id" />
+		<result column="aname" property="aname" />
+		<result column="aacount" property="aacount" />
+		<result column="apwd" property="apwd" />
+		<result column="aphone" property="aphone" />
+		<result column="astat" property="astat" />
+		<result column="areaId" property="areaId" />
+		<result column="address" property="address" />
+		<result column="workage" property="workage" />
+		<result column="level" property="level" />
+		<result column="productid" property="productid" />
+		<result column="faciid" property="faciid" />
+	</resultMap>
+	<select id="selectAgent" resultType="java.util.Map">
+		SELECT
+		a.id,
+		a.aname,
+		a.sex,
+		a.aacount,
+		a.apwd,
+		a.aphone,
+		a.astat,
+		a.areaId,
+		a.address,
+		a.portrait,
+		a.faciid,
+		b.workage,
+		b.level,
+		b.grade,
+		b.lookNum,
+		b.subsidyNum,
+		b.isHost
+		FROM
+		trw_t_agent a
+		inner join trw_t_agent_detail b on a.id =b.id
+		INNER
+		JOIN trw_t_service_agent_role c on a.id=c.agentId
+		WHERE
+		a.faciid =
+		#{faciid} And (c.roleId='2' or c.roleId='1')
+		GROUP BY
+		a.id
+	</select>
+	<select id="selectLandAgent" resultType="com.trw.model.TrwTAgent">
+		SELECT a.userNote,
+		a.aname, b.location, b.acreage,
+		b.purpose, b.userNoteland
+		FROM
+		trw_t_agent a,TRW_T_LAND b
+		WHERE
+		a.productid = b.productid
+	</select>
+	<select id="selectByfaciid" resultType="java.util.Map"
+		parameterType="map">
+		SELECT
+		a.id,
+		a.faciid,
+		a.aname,
+		c.roleName,
+		b.roleId,
+		d.workage,
+		d.isHost,
+		a.sex,
+		a.aphone,
+		d.subsidyNum,
+		a.createTime,
+		a.astat,
+		d.level,
+		a.portrait,
+		d.lookNum ,
+		d.dealNum
+		FROM
+		trw_t_agent a
+		left join
+		trw_t_service_agent_role b on a.id=b.agentId
+		left join
+		trw_t_service_role c on b.roleId=c.roleId
+		left join trw_t_agent_detail
+		d on a.id=d.id
+		WHERE
+		a.faciid = #{faciid}
+	</select>
+	<update id="updateByPhone">
+		update trw_t_agent set apwd =#{apwd}
+		where
+		aphone=#{aphone}
+	</update>
+</mapper>

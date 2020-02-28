@@ -1,0 +1,71 @@
+server: 
+  port: 8888
+  tomcat:
+    basedir: /logs/${spring.application.name}/temp
+
+spring: 
+  application:
+    name: eureka-zuul
+  http:
+    multipart:
+      maxFileSize: 50MB
+      maxRequestSize: 50MB
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8701/eureka
+    instance:
+      prefer-ip-address: true
+
+#配置路由
+zuul:
+  sensitive-headers: "*"
+  routes:
+    user:
+      path: /trw/user/**
+      serviceId: trw-user
+    land:
+      path: /trw/land/**
+      serviceId: trw-land
+    filemanager:
+      path: /trw/filemanager/**
+      serviceId: trw-filemanager
+    news:
+      path: /trw/news/**
+      serviceId: trw-news
+    order:
+      path: /trw/order/**
+      serviceId: trw-order
+    messages:
+      path: /trw/messages/**
+      serviceId: trw-messages
+    task:
+      path: /trw/task/**
+      serviceId: trw-task
+    score:
+      path: /trw/score/**
+      serviceId: trw-score
+
+#hystrix 配置
+hystrix: 
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+
+ribbon: 
+  eureka:
+    enabled: true
+  ReadTimeout: 60000
+  ConnectTimeout: 60000
+  OkToRetryOnAllOperations: false
+  MaxAutoRetriesNextServer: 0
+  MaxAutoRetries: 1    
+#==================== 日志  ============================
+logging:
+  level:
+    root: info
+  path: /logs/${spring.application.name}

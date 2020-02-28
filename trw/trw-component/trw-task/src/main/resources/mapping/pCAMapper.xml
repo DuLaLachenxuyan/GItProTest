@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.trw.mapper.PCAMapper">
+	
+     <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.trw.vo.PCAVo">
+        <id column="provinceid" property="id" />
+        <result column="province" property="name" />
+        <collection property="children" javaType="java.util.ArrayList" ofType="com.trw.vo.PCAVo">
+           <id column="cityid" property="id" />
+           <result column="city" property="name" />
+           <collection property="children" javaType="java.util.ArrayList" ofType="com.trw.vo.Area">
+           		<id column="areaid" property="id" />
+           		<result column="area" property="name" />
+           </collection>
+        </collection>
+    </resultMap>
+   <select id="selectPCA" resultMap="BaseResultMap">
+		 SELECT
+			a.provinceid,
+			a.province,
+			b.cityid,
+			b.city,
+			c.areaid,
+			c.area
+		FROM
+			provinces a
+		left JOIN cities b ON a.provinceid = b.provinceid
+		LEFT JOIN areas c ON b.cityid = c.cityid 
+	</select>
+	
+   <select id="getProvince" resultType="com.trw.vo.Area" parameterType="com.trw.vo.PCAVo">
+		 select a.provinceid as id,
+				a.province  as name
+			from provinces a 
+	</select>
+	
+   <select id="getCity" resultType="com.trw.vo.Area" parameterType="com.trw.vo.PCAVo">
+		 select  
+			cityid as id,
+			city as name			
+		 from cities
+			 
+	</select>
+	
+   <select id="getArea" resultType="com.trw.vo.Area" parameterType="com.trw.vo.PCAVo">
+		 select 
+		 	areaid as id,
+		 	area as name  
+		 from areas
+	</select>
+	
+</mapper>

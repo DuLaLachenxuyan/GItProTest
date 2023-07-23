@@ -26,7 +26,7 @@
 		<mybatisplus-spring-boot-starter.version>1.0.5</mybatisplus-spring-boot-starter.version>
 		<alipay.version>3.0.1</alipay.version>
 		<mybatis.generator.core.version>1.3.6</mybatis.generator.core.version>
-		<commons-beanutils.version>1.9.3</commons-beanutils.version>
+		<commons-beanutils.version>1.9.4</commons-beanutils.version>
 		<swagger2.version>2.9.2</swagger2.version>
 		<commons-lang3.version>3.6</commons-lang3.version>
 		<!--<lombok-version>1.18.0</lombok-version> -->
